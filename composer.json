@@ -1,0 +1,27 @@
+{
+  "name": "ubos/content-presets",
+  "type": "typo3-cms-extension",
+  "description": "TYPO3 content element presets",
+  "license": "MIT",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Amadeus Kiener",
+      "email": "amd.kiener@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "typo3/cms-core": ">=12.4.0 <12.4.99",
+  },
+  "autoload": {
+    "psr-4": {
+      "UBOS\\ContentPresets\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "content_presets"
+    }
+  }
+}

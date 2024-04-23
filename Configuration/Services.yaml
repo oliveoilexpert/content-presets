@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  UBOS\ContentPresets\:
+    resource: '../Classes/*'
+    exclude: '../Classes/Domain/Model/*'
+
+  cache.content_presets_wizard_items:
+    class: TYPO3\CMS\Core\Cache\Backend\BackendInterface
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments: ['content_presets_wizard_items']
+
+  UBOS\ContentPresets\EventListener\AddPresetsToNewContentElementWizard:
+    arguments:
+      $cache: '@cache.content_presets_wizard_items'
+    tags:
+      - name: event.listener
+        # identifier is used to sort the listeners, needs to be before content_defender listener
+        identifier: '01-content-presets-new-content-element-wizard'
