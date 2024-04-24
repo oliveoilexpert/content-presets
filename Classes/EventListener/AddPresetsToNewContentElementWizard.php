@@ -5,20 +5,21 @@ use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 final class AddPresetsToNewContentElementWizard {
 
     public function __construct(
-        private readonly BackendInterface $cache,
+        private readonly FrontendInterface $cache,
     ) {}
 
     private function getCachedWizardItemsArray(string $cacheIdentifier = 'auto', array $tags = [], int|null $lifetime = null): array
     {
         $value = $this->cache->get($cacheIdentifier);
         if ($value === false) {
-            $this->cache->set($cacheIdentifier, $this->generateWizardItemsArrayFromDatabase(), $tags, $lifetime);
+            $value = $this->generateWizardItemsArrayFromDatabase();
+            $this->cache->set($cacheIdentifier, $value, $tags, $lifetime);
         }
         return $value;
     }
@@ -71,12 +72,19 @@ final class AddPresetsToNewContentElementWizard {
                 }
                 $defValues[$col] = $val;
             }
+            $cTypeItem = array_values(array_filter($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'], function($item) use ($row) {
+                return $item['value'] === $row['CType'];
+            }))[0];
+            $label = $cTypeItem['label'] ?? '???';
+            if (str_starts_with($label, 'LLL:')) {
+                $label = LocalizationUtility::translate($label);
+            }
             $wizardItems[] = [
                 'key' => $elementKey,
                 'config' => [
                     'iconIdentifier' => $modelNameLowercaseUnderscored,
-                    'title' => 'Preset: '.$row['header'],
-                    'description' => 'Custom preset for '.LocalizationUtility::translate('LLL:EXT:puck/Resources/Private/Language/locallang_be.xlf:wizard.'.$modelNameLowercaseUnderscored).' element.',
+                    'title' => 'Preset: ' . $row['header'],
+                    'description' => 'Custom preset for ' . $label . ' element.',
                     'tt_content_defValues' => $defValues,
                 ],
             ];
