@@ -14,17 +14,17 @@ final class AddPresetsToNewContentElementWizard {
         private readonly FrontendInterface $cache,
     ) {}
 
-    private function getCachedWizardItemsArray(string $cacheIdentifier = 'auto', array $tags = [], int|null $lifetime = null): array
+    private function getCachedWizardItems(string $cacheIdentifier = 'auto', array $tags = [], int|null $lifetime = null): array
     {
         $value = $this->cache->get($cacheIdentifier);
         if ($value === false) {
-            $value = $this->generateWizardItemsArrayFromDatabase();
+            $value = $this->generateWizardItemsFromDatabase();
             $this->cache->set($cacheIdentifier, $value, $tags, $lifetime);
         }
         return $value;
     }
 
-    public function generateWizardItemsArrayFromDatabase(): array
+    public function generateWizardItemsFromDatabase(): array
     {
 
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -63,8 +63,7 @@ final class AddPresetsToNewContentElementWizard {
         $wizardItems = [];
 
         foreach($contentElements as $index => $row) {
-            $elementKey = 'preset_'.$row['CType'].'_'.$row['uid'];
-            $modelNameLowercaseUnderscored = str_replace('puck_','',$row['CType']);
+            $elementKey = '00_presets_'.$row['CType'].'_'.$row['uid'];
             $defValues = [];
             foreach($row as $col => $val) {
                 if($val === '' || $val === null || GeneralUtility::inList($excludeColumns, $col)) {
@@ -82,7 +81,7 @@ final class AddPresetsToNewContentElementWizard {
             $wizardItems[] = [
                 'key' => $elementKey,
                 'config' => [
-                    'iconIdentifier' => $modelNameLowercaseUnderscored,
+                    'iconIdentifier' => $cTypeItem['icon'],
                     'title' => 'Preset: ' . $row['header'],
                     'description' => 'Custom preset for ' . $label . ' element.',
                     'tt_content_defValues' => $defValues,
@@ -97,14 +96,15 @@ final class AddPresetsToNewContentElementWizard {
         ModifyNewContentElementWizardItemsEvent $event
     ): void
     {
+        $beforeKey = array_key_first($event->getWizardItems());
         $event->setWizardItem(
             '00_presets',
             [
                 'header' => 'Presets'
             ],
-            ['before' => '01_content']
+            ['before' => $beforeKey ?? '']
         );
-        foreach($this->getCachedWizardItemsArray() as $item) {
+        foreach($this->getCachedWizardItems() as $item) {
 
             $event->setWizardItem(
                 $item['key'],
@@ -112,6 +112,5 @@ final class AddPresetsToNewContentElementWizard {
                 ['after' => '00_presets']
             );
         }
-
     }
 }
