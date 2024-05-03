@@ -58,7 +58,7 @@ final class AddPresetsToNewContentElementWizard {
             )
             ->execute()
             ->fetchAll();
-        $excludeColumns = 'deleted,colPos,l10n_source,l10n_state,tx_impexp_origuid,t3_origuid,l18n_diffsource,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,l18n_parent,sys_language_uid,uid,pid,rowDescription,tstamp,crdate,cruser_id,starttime,endtime,sorting,hidden,tx_container_parent';
+        $excludeColumns = 'deleted,colPos,l10n_source,l10n_state,tx_impexp_origuid,t3_origuid,l18n_diffsource,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,l18n_parent,sys_language_uid,uid,pid,rowDescription,tstamp,crdate,cruser_id,starttime,endtime,sorting,hidden,tx_container_parent,pi_flexform';
 
         $wizardItems = [];
 
