@@ -34,10 +34,12 @@ final class AddPresetsToNewContentElementWizard {
             ->select('uid','doktype','module')
             ->from('pages')
             ->where(
+                $queryBuilderPages->expr()->eq('hidden', $queryBuilderPages->createNamedParameter(0)),
+                $queryBuilderPages->expr()->eq('deleted', $queryBuilderPages->createNamedParameter(0)),
                 $queryBuilderPages->expr()->eq('doktype', $queryBuilderPages->createNamedParameter(254)),
                 $queryBuilderPages->expr()->eq('module', $queryBuilderPages->createNamedParameter('content-presets'))
             )
-            ->executeQuery();
+            ->executeQuery()->fetchAllAssociative();
         if (empty($presetFolders)) {
             return [];
         }
@@ -55,7 +57,7 @@ final class AddPresetsToNewContentElementWizard {
                 $queryBuilderContent->expr()->eq('hidden', $queryBuilderContent->createNamedParameter(0)),
                 $queryBuilderContent->expr()->eq('deleted', $queryBuilderContent->createNamedParameter(0))
             )
-            ->executeQuery();
+            ->executeQuery()->fetchAllAssociative();
         $excludeColumns = 'deleted,colPos,l10n_source,l10n_state,tx_impexp_origuid,t3_origuid,l18n_diffsource,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,l18n_parent,sys_language_uid,uid,pid,rowDescription,tstamp,crdate,cruser_id,starttime,endtime,sorting,hidden,tx_container_parent,pi_flexform';
 
         $wizardItems = [];
