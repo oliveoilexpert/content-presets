@@ -85,6 +85,7 @@ final class AddPresetsToNewContentElementWizard {
                     'title' => 'Preset: ' . $row['header'],
                     'description' => 'Custom preset for ' . $label . ' element.',
                     'tt_content_defValues' => $defValues,
+                    'defaultValues' => $defValues,
                 ],
             ];
         }
